@@ -1,18 +1,29 @@
+import os
 import sys
 from slickrpc.rpc import Proxy
 import csv
 import progressbar
 
-if not (3 <= len(sys.argv) <= 5):
-    raise SystemExit(f'Usage: {sys.argv[0]} RPCUSER RPCPASSWORD [ HOST [ PORT ] ]\n\nFound: {sys.argv}')
+usage = f'Usage: {sys.argv[0]} OUTPUTDIR RPCUSER RPCPASSWORD [ HOST [ PORT ] ]\n\nFound: {sys.argv}'
+args = sys.argv[1:]
 
-user, passwd = sys.argv[1:3]
-host = '127.0.0.1'
-if len(sys.argv) > 3:
-    host = sys.argv[3]
-port = '8232'
-if len(sys.argv) > 4:
-    port = sys.argv[4]
+def pop_arg(name, default=None):
+    try:
+        return args.pop(0)
+    except IndexError:
+        if default is None:
+            raise SystemExit(f'Missing {name} argument.\n\n{usage}')
+        else:
+            return default
+
+os.chdir(pop_arg('OUTPUTDIR'))
+user = pop_arg('RPCUSER')
+passwd = pop_arg('RPCPASSWORD')
+host = pop_arg('HOST', default='127.0.0.1')
+port = pop_arg('PORT', default='8232')
+
+if len(args) > 0:
+    raise SystemExit(f'Unexpected args.\n\n{usage}')
 
 rpc_url = f'http://{user}:{passwd}@{host}:{port}/'
 print(f'RPC URL: {rpc_url!r}')
