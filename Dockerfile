@@ -9,7 +9,7 @@ RUN export APT_FRONTEND=noninteractive && \
         libcurl4-openssl-dev \
         libssl-dev
 
-RUN pip3 install slick-bitcoinrpc && pip3 install progressbar
+RUN pip3 install slick-bitcoinrpc && pip3 install progressbar2
 
 RUN mkdir -p /project/{src,output}
 COPY . /project/src
