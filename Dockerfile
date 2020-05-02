@@ -14,4 +14,4 @@ RUN pip3 install slick-bitcoinrpc && pip3 install progressbar
 RUN mkdir -p /project/{src,output}
 COPY . /project/src
 
-ENTRYPOINT python3 /project/src/4467-sprout-usage/grab_shielded_data.py
+ENTRYPOINT ["python3", "/project/src/4467-sprout-usage/grab_shielded_data.py"]

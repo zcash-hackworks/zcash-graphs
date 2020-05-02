@@ -4,7 +4,7 @@ import csv
 import progressbar
 
 if not (3 <= len(sys.argv) <= 5):
-    raise SystemExit('Usage: {} RPCUSER RPCPASSWORD [ HOST [ PORT ] ]'.format(sys.argv[0]))
+    raise SystemExit(f'Usage: {sys.argv[0]} RPCUSER RPCPASSWORD [ HOST [ PORT ] ]\n\nFound: {sys.argv}')
 
 user, passwd = sys.argv[1:3]
 host = '127.0.0.1'
@@ -14,7 +14,9 @@ port = '8232'
 if len(sys.argv) > 4:
     port = sys.argv[4]
 
-rpc_connection = Proxy(f'http://{user}:{passwd}@{host}:{port}')
+rpc_url = f'http://{user}:{passwd}@{host}:{port}/'
+print(f'RPC URL: {rpc_url!r}')
+rpc_connection = Proxy(rpc_url)
 
 cur_height = rpc_connection.getblockcount()
 pbar = progressbar.ProgressBar(max_value=cur_height)
