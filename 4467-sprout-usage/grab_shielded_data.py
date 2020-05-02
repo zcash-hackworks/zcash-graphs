@@ -1,8 +1,20 @@
+import sys
 from slickrpc.rpc import Proxy
 import csv
 import progressbar
 
-rpc_connection = Proxy("http://RPC_USER:RPC_PASSWORD@127.0.0.1:8232")
+if not (3 <= len(sys.argv) <= 5):
+    raise SystemExit('Usage: {} RPCUSER RPCPASSWORD [ HOST [ PORT ] ]'.format(sys.argv[0]))
+
+user, passwd = sys.argv[1:3]
+host = '127.0.0.1'
+if len(sys.argv) > 3:
+    host = sys.argv[3]
+port = '8232'
+if len(sys.argv) > 4:
+    port = sys.argv[4]
+
+rpc_connection = Proxy(f'http://{user}:{passwd}@{host}:{port}')
 
 cur_height = rpc_connection.getblockcount()
 pbar = progressbar.ProgressBar(max_value=cur_height)

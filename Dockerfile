@@ -4,14 +4,14 @@ RUN export APT_FRONTEND=noninteractive && \
     apt-get update && \
     apt-get upgrade && \
     apt-get install -y \
-        python \
-        python-pip \
+        python3 \
+        python3-pip \
         libcurl4-openssl-dev \
         libssl-dev
 
-RUN pip install slick-bitcoinrpc && pip install progressbar
+RUN pip3 install slick-bitcoinrpc && pip3 install progressbar
 
 RUN mkdir -p /project/{src,output}
 COPY . /project/src
 
-CMD python /project/src/4467-sprout-usage/grab_shielded_data.py
+ENTRYPOINT python3 /project/src/4467-sprout-usage/grab_shielded_data.py
