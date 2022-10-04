@@ -16,16 +16,9 @@ import math
 import numpy as np
 import os.path
 from progress.bar import IncrementalBar
+from slickrpc.rpc import Proxy
 from statistics import mean
 import sys
-
-sys.path.insert(
-    1,
-    os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                 "../../qa/rpc-tests")
-)
-
-from test_framework.authproxy import AuthServiceProxy
 
 ### TODO: Get host/port from config
 if len(sys.argv) > 1:
@@ -146,7 +139,7 @@ class Analysis:
 
 class Analyzer:
     def __init__(self, node_url):
-        self.node = AuthServiceProxy(node_url)
+        self.node = Proxy(node_url)
 
     def analyze_blocks(self, block_range, analyses):
         """
