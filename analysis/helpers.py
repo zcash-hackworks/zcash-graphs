@@ -11,6 +11,8 @@ import datetime
 import itertools
 import math
 
+blocks_per_hour = 48 # half this before NU2?
+
 def identity(x):
     return x
 

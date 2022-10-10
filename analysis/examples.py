@@ -28,10 +28,7 @@ else:
         "%s needs to be provided a connection string, like \"http://user:pass@localhost:port\"."
         % (sys.argv[0],))
 
-blocks_per_hour = 48 # half this before NU2?
-
-# start about a month before sandblasting
-start_range = blocks_per_hour * 24 * 7 * 206
+analyzer = Analyzer(connection_string)
 
 ### Requested Statistics
 
@@ -502,8 +499,6 @@ latest_fees_vs_10k = Analysis(
 )
 
 
-a = Analyzer(connection_string)
-
 def make_weekly_range(starting_week, number_of_weeks):
     start_of_range = blocks_per_hour * 24 * 7 * starting_week
     end_of_range = start_of_range + (blocks_per_hour * 24 * 7 * number_of_weeks)
@@ -517,7 +512,7 @@ pre_sandblasting_range = make_weekly_range(206, 12)
 recent_range = make_weekly_range(220, 1)
 
 start = datetime.datetime.now()
-for analysis in a.analyze_blocks(pre_sandblasting_range,
+for analysis in analyzer.analyze_blocks(pre_sandblasting_range,
                        [ # sandblaster_average_outputs_per_day,
                          # flat_fees_vs_actual,
                          # flat_fees_vs_actual_trans,
@@ -536,7 +531,7 @@ print(datetime.datetime.now() - start)
 
 # rerunning old data …
 start = datetime.datetime.now()
-for analysis in a.analyze_blocks(make_weekly_range(206, 1),
+for analysis in analyzer.analyze_blocks(make_weekly_range(206, 1),
                        [ actual_fees,
                          proposed_fees,
                        ]):
@@ -578,14 +573,14 @@ pool_movement = Analysis(
 )
 
 start = datetime.datetime.now()
-for analysis in a.analyze_blocks(recent_range,
+for analysis in analyzer.analyze_blocks(recent_range,
                        [ pool_movement
                        ]):
     print(analysis)
 print(datetime.datetime.now() - start)
 
 start = datetime.datetime.now()
-for analysis in a.analyze_blocks(pre_sandblasting_range,
+for analysis in analyzer.analyze_blocks(pre_sandblasting_range,
                        [ tx_below_pofm_threshold,
                          tx_below_pofm_threshold_5,
                          tx_below_pofm_threshold_max,
