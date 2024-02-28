@@ -10,7 +10,10 @@ readme = "README.md"
 python = "^3.10"
 slick-bitcoinrpc = "^0.1.4"
 progressbar2 = "^4.4.1"
+numpy = "^1.26.4"
 
+[tool.poetry.scripts]
+analysis-examples = "zcash_graphs.analysis.examples:main"
 
 [build-system]
 requires = ["poetry-core"]
