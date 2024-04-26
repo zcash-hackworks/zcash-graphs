@@ -17,8 +17,8 @@ import numpy as np
 from statistics import mean
 import sys
 
-from analyze import Analysis, Analyzer
-from helpers import *
+from zcash_graphs.analysis.analyze import Analysis, Analyzer
+from zcash_graphs.analysis.helpers import *
 
 ### TODO: Get host/port from config
 if len(sys.argv) > 1:

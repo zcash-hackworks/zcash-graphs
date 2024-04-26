@@ -12,7 +12,7 @@ over some common range of blocks.
 import datetime
 import itertools
 import math
-from progress.bar import IncrementalBar
+import progressbar
 from slickrpc.rpc import Proxy
 
 class Analysis:
@@ -140,18 +140,21 @@ class Analyzer:
         )
         longest_precache = max([x.preCache for x in analyses])
         data_start = bounded_range[0]
-        for i in IncrementalBar('Building Cache   ').iter(range(max(0, data_start - longest_precache), data_start)):
+        bar = progressbar.ProgressBar(widgets=['Building Cache   ', progressbar.Bar()])
+        for i in bar(range(max(0, data_start - longest_precache), data_start)):
             [x.updateCache(self.node.getblock(str(i), 2)) for x in analyses]
 
         bucketses = [(x, []) for x in analyses]
-        for block_height in IncrementalBar('Processing Blocks').iter(block_range):
+        bar = progressbar.ProgressBar(widgets=['Processing Blocks', progressbar.Bar()])
+        for block_height in bar(block_range):
             block = self.node.getblock(str(block_height), 2)
             for tx in block['tx']:
                 for analysis in analyses:
                     dict(bucketses)[analysis].extend(analysis.extract(block, tx))
 
         result = []
-        for analysis in IncrementalBar('Running Analyses ').iter(analyses):
+        bar = progressbar.ProgressBar(widgets=['Running Analyses ', progressbar.Bar()])
+        for analysis in bar(analyses):
             result.append((analysis.name, analysis.aggregate(dict(bucketses)[analysis])))
 
         return result
