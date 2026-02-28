@@ -1,20 +1,22 @@
-[tool.poetry]
+[project]
 name = "zcash-graphs"
 version = "0.1.0"
+dependencies = [
+    "slick-bitcoinrpc >= 0.1.4",
+    "progressbar2 >= 4.4.1",
+    "numpy >= 1.26.4",
+]
+requires-python = ">= 3.10"
+authors = [{ name = "Jack Grigg", email = "thestr4d@gmail.com" }]
 description = "Scripts for collecting and graphing data about the Zcash chain"
-authors = ["Jack Grigg <jack@electriccoin.co>"]
-license = "MIT"
 readme = "README.md"
+classifiers = [
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Private :: Do Not Upload",
+]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-slick-bitcoinrpc = "^0.1.4"
-progressbar2 = "^4.4.1"
-numpy = "^1.26.4"
-
-[tool.poetry.scripts]
-analysis-examples = "zcash_graphs.analysis.examples:main"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[project.urls]
+Homepage = "https://github.com/zcash/zcash-graphs"
+Documentation = "https://github.com/zcash/zcash-graphs"
+Repository = "https://github.com/zcash/zcash-graphs.git"
