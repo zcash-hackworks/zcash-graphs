@@ -9,11 +9,22 @@ method `analyze_blocks`, which handles applying multiple analyses simultaneously
 over some common range of blocks.
 """
 
+from collections.abc import Callable
 import datetime
 import itertools
 import math
+from typing import Any
+
 import progressbar
 from slickrpc.rpc import Proxy
+
+
+type Cache = Any
+type Block = dict[str, Any]
+type Tx = dict[str, Any]
+type Key = Any
+type Value = Any
+
 
 class Analysis:
     """
@@ -28,18 +39,22 @@ class Analysis:
     take advantage of this structure.
     """
 
-    def __init__(self, name, tx_filter, bucketers, extractor, cache = ((), lambda c, _: c), preCache = 0):
-        """It takes various functions to apply to the transactions therein. The functions are typed as follows:
+    def __init__(
+            self,
+            name: str,
+            tx_filter: Callable[[Cache, Block, Tx], bool],
+            bucketers: list[tuple[Callable[[Cache, Block, Tx], Key], Callable[[list[tuple[Key, Value]] | list[Value]], Value]]],
+            extractor: Callable[[Cache, Block, Tx], Value],
+            cache: tuple[Cache, Callable[[Cache, Block], Cache]] = ((), lambda c, _: c),
+            preCache = 0,
+    ):
+        """It takes various functions to apply to the transactions therein.
 
-    tx_filter :: cache -> Block -> Tx -> Boolean
     bucketers :: [ ...,
                    (cache -> Block -> Tx -> k_n-2, [(k_n-1, a)] -> b),
                    (cache -> Block -> Tx -> k_n-1, [(k_n, a)] -> b),
                    (cache -> Block -> Tx -> k_n,   [v] -> a)
                  ]
-    extractor :: cache -> Block -> Tx -> v
-    cache :: (cache, cache -> Block -> cache)
-    preCache = Natural
 
     `tx_filter` decides whether the given transaction should be included in the
                 result,
@@ -72,7 +87,7 @@ class Analysis:
         self.preCache = preCache
         self.__lastCachedBlock = 0
 
-    def updateCache(self, block):
+    def updateCache(self, block: Block):
         """
         This is exposed in order to handle the "precache", where we need to
         build up the cache for blocks before the blocks we actually care to have
@@ -82,7 +97,7 @@ class Analysis:
             self.__cache = self.__cacheUpdater(self.__cache, block)
             self.__lastCachedBlock = block['height']
 
-    def extract(self, block, tx):
+    def extract(self, block: Block, tx: Tx) -> list[tuple[list[Key], Value]]:
         """
         Extracts all the data from a given transaction (and its block) needed to
         compute the statistics for this analysis.
@@ -103,7 +118,7 @@ class Analysis:
         else:
             return []
 
-    def aggregate(self, kvs):
+    def aggregate(self, kvs: list[tuple[list[Key], Value]]):
         """
         Given a `[([k_0, k_1, ..., k_n-1], v)]` (where `n` is the length of the
         bucketer list provided at initialization and `k_*` are the results of
@@ -113,7 +128,7 @@ class Analysis:
         kvs.sort(key=lambda x: x[0])
         return self.__group(kvs, [x[1] for x in self.__bucketers])
 
-    def __group(self, kvs, accumulators):
+    def __group(self, kvs: list[tuple[list[Key], Value]], accumulators):
         if accumulators:
             buck = []
             accum, *remaining_accum = accumulators
@@ -128,7 +143,7 @@ class Analyzer:
     def __init__(self, node_url):
         self.node = Proxy(node_url)
 
-    def analyze_blocks(self, block_range, analyses):
+    def analyze_blocks(self, block_range: range, analyses: list[Analysis]):
         """
         This function executes multiple analyses over a common range of blocks,
         returning results keyed by the name of the analysis.
